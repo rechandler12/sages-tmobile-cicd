@@ -1,0 +1,48 @@
+= Szkolenie CI/CD z wykorzystaniem Jenkinsa i GitLaba
+:author: Juliusz Marciniak
+
+Szkolenie z podstaw CI/CD.........................................................................
+
+== O trenerze
+
+Imię i nazwisko: Juliusz Marciniak
+
+Zawód: Programista, DevOps, TechLead
+
+Doświadczenie: 10 lat
+
+Technologie:
+
+* Java, Spring
+* Jenkins, GitLab, Nexus
+* Docker, Kubernetes
+
+Jestem programistą Java z 10 letnim stażem. W codziennej pracy zajmuję się tematami cloudowymi i Kubernetesowymi. Oprócz tego doglądam architektury aplikacji w swoich projektach. Jestem entuzjastą nowych rozwiązań i technologii. Zwracam dużą uwagę, by rzeczy wdrażane przeze mnie były przemyślane i spójne. Czasami też programuję... i rekrutuję.
+
+== Agenda
+=== Dzień 1
+. Podstawy teoretyczne
+. Narzędzia do CI/CD - dlaczego wybieramy konkretne rozwiązania, GitLab Runner/Bamboo/Jenkins
+. Jenkins
+.. Podstawy teoretyczne
+.. Instalacja i konfiguracja
+.. Pluginy
+.. Deklarowanie pipeline
+. GitLab Runner
+.. Instalacja i konfiguracja
+.. Porównanie z Jenkinsem
+.. Deklarowanie pipeline
+
+=== Dzień 2
+. Nexus
+.. Podstawy teoretyczne
+.. Instalacja i konfiguracja
+. Integracja narzędzi w spójny sposób
+. Wstęp do CI/CD w chmurze
+
+=== Dzień 3
+[IMPORTANT]
+To są przykładowe problemy, możliwe, że części z nich nie zdążymy omówić, a może będziemy dokładać.
+
+. Warsztat na faktycznych problemach organizacji
+..

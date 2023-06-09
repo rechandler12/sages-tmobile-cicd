@@ -1,0 +1,12 @@
+= Podstawy teoretyczne
+
+== Korzyści
+
+* Lepsza jakość kodu
+* Szybsze dostarczanie nowych funkcjonalności
+* Automatyzacja procesów
+* Zmniejszenie kosztów
+* Uproszczony rollback zmian
+*
+
+== Kim jest DevOps
