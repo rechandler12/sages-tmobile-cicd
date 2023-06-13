@@ -1,5 +1,34 @@
 = Zadania
 
+== Podstawy obsługi
+
+=== Zadanie 1. Stworzenie repozytorium
+
+. Załóż konto na https://gitlab.com
+. Stwórz repozytorium kodu
+. Pobierz repozytorium do lokalnego katalogu
+
+=== Zadanie 2. Dodanie MR
+. Stwórz nowego brancha
+. Wypchnij go do repozytorium
+. Utwórz MR
+
+=== Zadanie 3. Code review
+. Dodaj uczestników szkolenia do projektu jako developerów
+. Poproś uczestników o code review
+
+=== Zadanie 4. Integracja ze Slack
+. Dodaj aplikacje GitLab do Slacka
+. Skonfiguruj aplikację w taki sposób, żeby wszystko wysyłała na publiczny kanał stworzony przez Ciebie
+
+=== Zadanie 5. Dodanie projektu aplikacji
+. Wypchnij do repozytorium jakikolwiek projekt aplikacji (w taki języku, w jakim czujesz się swobodnie)
+
+=== Zadanie 6. Opcje mergowania MR
+. Stwórz kilka nowych MR
+. Spróbuj je zmergować z różnymi opcjami
+. Jaki efekt uzyskałeś?
+
 == Instalacja i konfiguracja
 
 == Zadanie 1. Zainstaluj GitLab Runnera
