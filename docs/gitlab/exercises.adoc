@@ -42,6 +42,9 @@ sudo apt-get install gitlab-runner
 
 === Zadanie 2. Skonfiguruj 2 runnery
 
+[IMPORTANT]
+Zainstalowanie runnerów jako root (z `sudo` lub po zalogowaniu jako user root, np. `sudo -Hi`) nie wymaga ich uruchomienia poleceniem `gitlab-runner run`
+
 . Załóż konto na stronie gitlab.com
 . Utwórz repozytorium
 . Przejdź do konfiguracji repozytorium
@@ -87,10 +90,41 @@ build-job:
 . Zmień wywołanie `echo` na `mvn clean verify`
 . Sprawdź, czy pipeline wykonał się poprawnie
 
+==== Rozwiązanie
+
+[source,yaml]
+----
+stages:
+  - build
+
+build-job:
+  stage: build
+  script:
+    - mvn clean verify
+----
+
+
 === Zadanie 3. Budowanie aplikacji na konkretnym obrazie Dockerowym
 
 . Popraw poprzedni pipeline wskazując, z jakiego obrazu Dockerowego ma korzystać runner (możesz wskazać: `maven:3.9.2-eclipse-temurin-17`)
 . Otaguj `build-job`, żeby korzystał z Runnera dockerowego
+
+==== Rozwiązanie
+
+[source,yaml]
+----
+image: maven:3.9.2-eclipse-temurin-17
+
+stages:
+  - build
+
+build-job:
+  stage: build
+  tags:
+    - docker
+  script:
+    - mvn clean verify
+----
 
 === Zadanie 4. Testy
 
@@ -101,6 +135,26 @@ build-job:
 . Uruchom pipeline
 . Zobacz, jak wyglądają wyniki w momencie, kiedy część testów nie przechodzi
 
+==== Rozwiązanie
+
+[source,yaml]
+----
+image: maven:3.9.2-eclipse-temurin-17
+
+stages:
+  - build
+
+build-job:
+  stage: build
+  tags:
+    - docker
+  script:
+    - mvn clean verify
+  artifacts:
+    reports:
+      junit: target/surefire-reports/TEST-*.xml
+----
+
 === Zadanie 5. Warunkowe wykonanie kroków
 
 . Dopisz krok, który wykona się tylko na branchu `dev`
@@ -109,15 +163,131 @@ build-job:
 . Użyj instrukcji `when: manual`
 . Sprawdź efekt
 
+==== Rozwiązanie
+
+[source,yaml]
+----
+image: maven:3.9.2-eclipse-temurin-17
+
+stages:
+  - build
+
+build-job:
+  stage: build
+  tags:
+    - docker
+  script:
+    - mvn clean verify
+  artifacts:
+    reports:
+      junit: target/surefire-reports/TEST-*.xml
+
+build-job-dev:
+  stage: build
+  tags:
+    - docker
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'dev'
+  script:
+    - echo "Hello World!"
+  artifacts:
+    reports:
+      junit: target/surefire-reports/TEST-*.xml
+----
+
 === Zdanie 6. Merge request
 
 . Stwórz krok, który wykona się w momencie stworzenia merge requesta — użyj do tego dokumentacji https://docs.gitlab.com/ee/ci/pipelines/merge_request_pipelines.html
+
+
+==== Rozwiązanie
+
+[source,yaml]
+----
+image: maven:3.9.2-eclipse-temurin-17
+
+stages:
+  - build
+
+build-job:
+  stage: build
+  tags:
+    - docker
+  script:
+    - mvn clean verify
+  artifacts:
+    reports:
+      junit: target/surefire-reports/TEST-*.xml
+
+build-job-dev:
+  stage: build
+  tags:
+    - docker
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'dev'
+  script:
+    - echo "Hello World!"
+  artifacts:
+    reports:
+      junit: target/surefire-reports/TEST-*.xml
+
+build-job-mr:
+  stage: build
+  tags:
+    - docker
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+  script:
+    - echo "Hello World MR!"
+  artifacts:
+    reports:
+      junit: target/surefire-reports/TEST-*.xml
+----
 
 === Zadanie 7. Dodanie chache
 
 . Dopisz cachowanie folderu `.m2/repository`
 . Uruchom pipeline
 . Sprawdź, czy znowu były ściągane artefakty
+
+==== Rozwiązanie
+
+[source,yaml]
+----
+image: maven:3.9.2-eclipse-temurin-17
+
+cache:
+  paths:
+    - .m2/repository
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+
+stages:
+  - build
+
+build-job:
+  stage: build
+  tags:
+    - docker
+  script:
+    - mvn clean verify
+  artifacts:
+    reports:
+      junit: target/surefire-reports/TEST-*.xml
+
+build-job-dev:
+  stage: build
+  tags:
+    - docker
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'dev'
+  script:
+    - echo "Hello World!"
+  artifacts:
+    reports:
+      junit: target/surefire-reports/TEST-*.xml
+----
 
 === Zadanie 8. Zapisanie artefaktu
 

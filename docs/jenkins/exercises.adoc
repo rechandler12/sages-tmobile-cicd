@@ -52,16 +52,70 @@ pipeline {
 . Uruchom pipeline dwukrotnie
 . Sprawdź co znajduje się w workspace
 
+==== Rozwiązanie
+[source,groovy]
+----
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                sh 'uuidgen | xargs touch'
+            }
+        }
+    }
+}
+----
+
 === Zadanie 3. Wyczyszczenie Workspace
 
 . Zmodyfikuj pipeline z poprzedniego zadania, dodając krok czyszczący Workspace, używając pluginu Workspace Cleanup
 . Uruchom pipeline dwukrotnie
 . Sprawdź co znajduje się w workspace
 
+==== Rozwiązanie
+[source,groovy]
+----
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                cleanWs()
+                sh 'uuidgen | xargs touch'
+            }
+        }
+    }
+}
+----
+
 === Zadanie 4. Budowanie aplikacji Spring Boot
 
 . Stwórz nowy pipeline o nazwie `pet-clinic-build`
 . Na podstawie pipeline poprzedniego zadania stwórz pipeline, który za pomocą komendy `mvn clean verify` zbuduje projekt https://github.com/spring-projects/spring-petclinic[pet-clinic]
+
+==== Rozwiązanie
+[NOTE]
+Uwaga, w trakcie trwania szkolenia zmienił się projekt pet-clinic i teraz do budowania wymaga Dockera. Należy dodać użytkownika `jenkins` do grupy `docker`. W tym celu można użyć komendy: `sudo usermod -aG docker jenkins && sudo systemctl restart jenkins`
+
+[source,groovy]
+----
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                cleanWs()
+                git branch: 'main', url: 'https://github.com/spring-projects/spring-petclinic.git'
+                sh 'mvn clean verify'
+            }
+        }
+    }
+}
+----
 
 === Zadanie 5. Testy
 
@@ -72,9 +126,70 @@ pipeline {
 . Uruchom pipeline
 . Zobacz, jak wyglądają wyniki w momencie, kiedy część testów nie przechodzi
 
+==== Rozwiązanie
+[NOTE]
+Zmieniony projekt losowo przechodzi albo nie, więc czasami trzeba puścić więcej niż 1 pipeline, żeby zobaczyć efekt
+
+[source,groovy]
+----
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                cleanWs()
+                git branch: 'main', url: 'https://github.com/spring-projects/spring-petclinic.git'
+                //git branch: 'master', url: 'https://github.com/jglick/simple-maven-project-with-tests.git'
+                sh 'mvn clean verify'
+            }
+        }
+    }
+
+    post {
+        always {
+            junit allowEmptyResults: true, testResults: '**/target/**/TEST-*.xml'
+        }
+    }
+}
+----
+
 === Zadanie 6. Podział na stage
 
 . Napisany przez siebie pipeline z poprzedniego zadania podziel na 3 stage: ['Clean', 'Checkout', 'Build']
+
+[source,groovy]
+----
+pipeline {
+    agent any
+
+    stages {
+        stage('Clean') {
+            steps {
+                cleanWs()
+            }
+        }
+
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/spring-projects/spring-petclinic.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean verify'
+            }
+        }
+    }
+
+    post {
+        always {
+            junit allowEmptyResults: true, testResults: '**/target/**/TEST-*.xml'
+        }
+    }
+}
+----
 
 === Zdanie 7. Notyfikacja na Slacku
 
