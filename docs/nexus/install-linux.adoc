@@ -23,7 +23,7 @@ sudo chown -R nexus:nexus /opt/sonatype-work
 ----
 
 [start=4]
-. W pliku `/opt/nexus/bin/nexus.rc` zmień `#run_as_user=””` na `run_as_user=”nexus”`
+. W pliku `/opt/nexus/bin/nexus.rc` zmień `#run_as_user=""` na `run_as_user="nexus"`
 . Utwórz plik `/etc/systemd/system/nexus.service` z zawartością
 
 ./etc/systemd/system/nexus.service
