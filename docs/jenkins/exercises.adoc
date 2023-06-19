@@ -53,6 +53,7 @@ pipeline {
 . Sprawdź co znajduje się w workspace
 
 ==== Rozwiązanie
+
 [source,groovy]
 ----
 pipeline {
@@ -75,6 +76,7 @@ pipeline {
 . Sprawdź co znajduje się w workspace
 
 ==== Rozwiązanie
+
 [source,groovy]
 ----
 pipeline {
@@ -158,6 +160,8 @@ pipeline {
 
 . Napisany przez siebie pipeline z poprzedniego zadania podziel na 3 stage: ['Clean', 'Checkout', 'Build']
 
+==== Rozwiązanie
+
 [source,groovy]
 ----
 pipeline {
@@ -200,6 +204,53 @@ pipeline {
 . Sprawdź, czy notyfikacja została wysłana
 . Zmodyfikuj pipeline w taki sposób, żeby komunikat na Slacka zawierał parametry `BUILD_TAG` i `BUILD_URL`
 
+==== Rozwiązanie
+
+[source,groovy]
+----
+pipeline {
+    agent any
+
+    stages {
+        stage('Clean') {
+            steps {
+                cleanWs()
+            }
+        }
+
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/spring-projects/spring-petclinic.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean verify'
+            }
+        }
+    }
+
+    post {
+        always {
+            notify(":heart_eyes: build *${env.$BUILD_TAG}* has ended (<${env.BUILD_URL}|Open>)")
+            junit allowEmptyResults: true, testResults: '**/target/**/TEST-*.xml'
+        }
+    }
+}
+
+def notify(def color = 'good', def message) {
+    slackSend(
+            channel: 'jenkins-imie-nazwisko',
+            color: color,
+            message: message,
+            teamDomain: 'tmobile',
+            tokenCredentialId: 'slack-tmobile-token',
+            username: 'Jenkins-Backend'
+    )
+}
+----
+
 === Zadanie 8. Zmienne środowiskowe
 
 . Stwórz nowy pipeline o nazwie `base-curl-with-credentials`
@@ -216,11 +267,58 @@ pipeline {
 . Zmień credentiali ze zmiennych środowiskowych na dyrektywę `withCredentials`
 . Uruchom pipeline
 
+==== Rozwiązanie
+
+[source,groovy]
+----
+pipeline {
+    agent any
+
+    environment {
+        CURL_CREDS = credentials('credentials')
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                sh 'curl -i -u "$CURL_CREDS_USR:$CURL_CREDS_PSW" https://httpbin.org/basic-auth/foo/bar'
+                withCredentials([usernamePassword(credentialsId: 'credentials', passwordVariable: 'password', usernameVariable: 'username')]) {
+                    sh 'curl -i -u "$username:$password" https://httpbin.org/basic-auth/foo/bar'
+                }
+            }
+        }
+    }
+}
+----
+
 === Zadanie 9. Parametry wejściowe
 
 . Stwórz nowy pipeline o nazwie `base-echo-with-parameters`
 . Dodaj parametr wejściowy do pipeline
 . Wyświetl parametr wejściowy w konsoli (jak w Zadaniu 1)
+
+==== Rozwiązanie
+
+[source,groovy]
+----
+pipeline {
+    agent any
+
+    parameters {
+        string name: 'Example',
+                description: 'Example',
+                trim: true
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                sh "echo ${params.RELEASE}"
+            }
+        }
+    }
+}
+----
 
 == Pipeline wewnątrz repozytorium
 

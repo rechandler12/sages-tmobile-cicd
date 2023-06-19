@@ -26,6 +26,47 @@ include::first-configuration.adoc[leveloffset=3]
 . Użyj tego samego pluginu
 . Użyj instrukcji `withCredentials` do przekazania credentiali
 
+[source,groovy]
+----
+pipeline {
+    agent any
+
+    stages {
+        stage('Clean') {
+            steps {
+                cleanWs()
+            }
+        }
+
+        stage('Checkout') {
+            steps {
+                git url: 'https://github.com/rechandler12/sages-tmobile-cicd.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                dir('docker-pipeline') {
+                    script {
+                        image = docker.build("example/example:latest")
+                    }
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    docker.withRegistry('registry', 'nexus') {
+                        image.push()
+                    }
+                }
+            }
+        }
+    }
+}
+----
+
 === Zadanie 4. Wydanie wersji aplikacji mavenowej
 
 . Będziemy bazować na forku, który stworzyłeś w ramach modułu Pipeline wewnątrz repozytorium Zadanie 1

@@ -103,7 +103,6 @@ build-job:
     - mvn clean verify
 ----
 
-
 === Zadanie 3. Budowanie aplikacji na konkretnym obrazie Dockerowym
 
 . Popraw poprzedni pipeline wskazując, z jakiego obrazu Dockerowego ma korzystać runner (możesz wskazać: `maven:3.9.2-eclipse-temurin-17`)
@@ -199,7 +198,6 @@ build-job-dev:
 
 . Stwórz krok, który wykona się w momencie stworzenia merge requesta — użyj do tego dokumentacji https://docs.gitlab.com/ee/ci/pipelines/merge_request_pipelines.html
 
-
 ==== Rozwiązanie
 
 [source,yaml]
@@ -293,3 +291,46 @@ build-job-dev:
 
 . Dopisz zapisywanie artefaktu
 . Sprawdź, czy artefakt się zapisał
+
+==== Rozwiązanie
+
+[source,yaml]
+----
+image: maven:3.9.2-eclipse-temurin-17
+
+cache:
+  paths:
+    - .m2/repository
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+
+stages:
+  - build
+
+build-job:
+  stage: build
+  tags:
+    - docker
+  script:
+    - mvn clean verify
+  artifacts:
+    reports:
+      junit: target/surefire-reports/TEST-*.xml
+    paths:
+      - target/*.jar
+
+build-job-dev:
+  stage: build
+  tags:
+    - docker
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'dev'
+  script:
+    - echo "Hello World!"
+  artifacts:
+    reports:
+      junit: target/surefire-reports/TEST-*.xml
+    paths:
+      - target/*.jar
+----
