@@ -264,7 +264,7 @@ def notify(def color = 'good', def message) {
 . Uruchom pipeline
 . Sprawdź logi
 . Doprowadź do sytuacji, kiedy Jenkins nie będzie zwracał warna
-. Zmień credentiali ze zmiennych środowiskowych na dyrektywę `withCredentials`
+. Zmień credentiale ze zmiennych środowiskowych na dyrektywę `withCredentials`
 . Uruchom pipeline
 
 ==== Rozwiązanie
